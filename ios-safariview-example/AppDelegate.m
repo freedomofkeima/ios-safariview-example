@@ -42,4 +42,26 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+// Requires iOS 9 and up, otherwise, you should implement deprecated method
+// However, since this example requires SafariView (iOS 9 and up), we will only implement the following method
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<NSString *, id> *)options {
+    NSLog(@"application openURL options is called");
+    
+    NSString *sourceApplication = [options objectForKey:@"UIApplicationOpenURLOptionsSourceApplicationKey"];
+    NSString *urlScheme = [url scheme];
+    NSString *urlQuery = [url query];
+    
+    // Check URL scheme and caller
+    if ([urlScheme isEqualToString:@"freedomofkeima"] &&
+        [sourceApplication isEqualToString:@"com.apple.SafariViewService"]) {
+        // Pass it via notification
+        NSLog(@"Value: %@", urlQuery);
+        NSDictionary *data = [NSDictionary dictionaryWithObject:urlQuery forKey:@"key"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"SafariCallback" object:self userInfo:data];
+        
+        return YES;
+    }
+    return NO;
+}
+
 @end
